@@ -22,6 +22,17 @@ public class Furniture implements HouseholdItem{
 		this.weight = weight;
 	}
 
+	public void getCost(Visitor v) {
+
+		v.visitCost(this);
+
+	}
+
+	public void getInstructions(Visitor v) {
+
+		v.visitInstructions(this);
+	}
+
 
 	
 

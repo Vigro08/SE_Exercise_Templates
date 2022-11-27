@@ -8,7 +8,7 @@ public class Client{
 	
 public static void main(String[] args) {
 		
-
+		Visitor v = new ElementVisitor();
 		//Initialise some household
 		List<HouseholdItem> householdItmes= new ArrayList<>();
 
@@ -27,6 +27,20 @@ public static void main(String[] args) {
         List<HouseholdItem> namesList = Arrays.asList(microwaveOven,tv,wineGlass,coffeeTable,bed,cupboard );
         householdItmes.addAll(namesList);
 		
+		tv.getCost(v);
+		microwaveOven.getCost(v);
+		wineGlass.getCost(v);
+		coffeeTable.getCost(v);
+		bed.getCost(v);
+		cupboard.getCost(v);
+
+		tv.getInstructions(v);
+		microwaveOven.getInstructions(v);
+		wineGlass.getInstructions(v);
+		coffeeTable.getInstructions(v);
+		bed.getInstructions(v);
+		cupboard.getInstructions(v);
+
   
 }
 
