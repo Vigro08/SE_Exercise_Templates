@@ -6,15 +6,10 @@ import java.util.List;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.BiPredicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 
@@ -33,8 +28,6 @@ public class AuthorListParser {
     private static final int offsettokenabbr = 1; // String -- token abbreviation;
 
     private static final int offsettikenname = 2; 
-    
-    private static final int offsettokenset = 3;
     
     // Character -- token terminator (either " " or
     // "-") comma)
@@ -103,6 +96,21 @@ public class AuthorListParser {
      * @param listOfNames the String containing the person names to be parsed
      * @return a parsed list of persons
      */
+
+    public AuthorList parseAuthors(String listOfNames) {
+
+        original = listOfNames;
+        ts = 0;
+        tokenEnd = 0;
+
+        List<Author> au = new ArrayList<>();
+        while (ts < original.length()) {
+            getauthor().ifPresent(au::add);
+        }
+        return new AuthorList(au);
+    }
+
+
     public AuthorList parse(String listOfNames) {
         Objects.requireNonNull(listOfNames);
 
@@ -126,7 +134,7 @@ public class AuthorListParser {
             // Usually the getAsLastFirstNamesWithAnd method would separate them if pre- and lastname are separated with "and"
             // If not, we check if spaces separate pre- and lastname
             if (spaceInAllParts) {
-                listOfNames = listOfNames.replaceAll(",", " and");
+                listOfNames = listOfNames.replace(",", " and");
             } else {
                 // Looking for name affixes to avoid
                 // arrayNameList needs to reduce by the count off avoiding terms
@@ -151,16 +159,7 @@ public class AuthorListParser {
         }
 
         // initialization of parser
-        original = listOfNames;
-        ts = 0;
-        tokenEnd = 0;
-
-        // Parse author by author
-        List<Author> au = new ArrayList<>(5); // 5 seems to be reasonable initial size
-        while (ts < original.length()) {
-            getauthor().ifPresent(au::add);
-        }
-        return new AuthorList(au);
+        return parseAuthors(listOfNames);
     }
 
     /**
@@ -187,21 +186,22 @@ public class AuthorListParser {
                 case COMMA:
                     if (commaFirst < 0) {
                         commaFirst = tokens.size();
+                        break;
                     } else if (commaSecond < 0) {
                         commaSecond = tokens.size();
+                        break;
                     }
+                    break;
          
                 case WORD:
                     tokens.add(original.substring(ts, tokenEnd));
                     tokens.add(original.substring(ts, tokenAbbrEnd));
                     tokens.add(tokenTerm);
                     tokens.add(tokenCase);
-                    if (commaFirst >= 0) {
+                    if (commaFirst >= 0 || lastStart >= 0) {
                         break;
                     }
-                    if (lastStart >= 0) {
-                        break;
-                    }
+
                     if (vonStart < 0) {
                         if (!tokenCase) {
                             int previousTermToken = (tokens.size() - TOKEN_GROUP_LENGTH - TOKEN_GROUP_LENGTH) + offsettikenname;
@@ -429,11 +429,10 @@ public class AuthorListParser {
             if (firstLetterIsFound && (tokenAbbrEnd < 0) && ((bracesLevel == 0) || (c == '{'))) {
                 tokenAbbrEnd = tokenEnd;
             }
-            if ((c == '}')) {
-            	if( (bracesLevel > 0)) {
+            if ((c == '}') && (bracesLevel > 0)) {
                 bracesLevel--;
             }
-            	}
+
             if (!firstLetterIsFound && (currentBackslash < 0) && Character.isLetter(c)) {
                 if (bracesLevel == 0) {
                     tokenCase = Character.isUpperCase(c) || (Character.UnicodeScript.of(c) == Character.UnicodeScript.HAN);

@@ -17,8 +17,6 @@ import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import java.util.Locale;
-
 
 
 public class CitationKeyBasedFileFinder {
@@ -31,12 +29,19 @@ public class CitationKeyBasedFileFinder {
     public List<Path> findAssociatedFiles(BibEntry entry, List<Path> directories, List<String> extensions) throws IOException {
         Objects.requireNonNull(directories);
         Objects.requireNonNull(entry);
+        String citeKey;
 
         Optional<String> citeKeyOptional = entry.getCitationKey();
         if (StringUtil.isBlank(citeKeyOptional)) {
             return Collections.emptyList();
         }
-        String citeKey = citeKeyOptional.get();
+        if (citeKeyOptional.isPresent()) {
+
+        citeKey = citeKeyOptional.get();
+
+        } else {
+            citeKey = "";
+        }
 
         List<Path> result = new ArrayList<>();
 
@@ -58,15 +63,12 @@ public class CitationKeyBasedFileFinder {
                 result.add(file);
             }
         }
-        
-        List<Path> res=result.stream().sorted().collect(Collectors.toList());
 
-        return res;
+        return result.stream().sorted().collect(Collectors.toList());
     }
 
     private boolean matches(String filename, String citeKey) {
-        boolean startsWithKey = filename.startsWith(citeKey);
-        if (startsWithKey) {
+        if (filename.startsWith(citeKey)) {
             // The file name starts with the key, that's already a good start
             // However, we do not want to match "JabRefa" for "JabRef" since this is probably a file belonging to another entry published in the same time / same name
             char charAfterKey = filename.charAt(citeKey.length());

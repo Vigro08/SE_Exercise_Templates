@@ -4,9 +4,9 @@ public class Main {
 	
 	public static void main(String[] args) {
 		
-		debuggingExercise1_2();
+		//debuggingExercise1_2();
 		
-		//debuggingExercise3();
+		debuggingExercise3();
 				
 	}
 
@@ -16,7 +16,7 @@ public class Main {
 		
 		ShoppingBasket johnShoppingBasket= new ShoppingBasket();
 		johnShoppingBasket.addTobasket("Bread");
-		johnShoppingBasket.addTobasket("water");
+		johnShoppingBasket.addTobasket("Water");
 	    System.out.println("john bill : " + johnShoppingBasket.getBill());
 	    
 	    ShoppingBasket saraShoppingBasket= new ShoppingBasket();

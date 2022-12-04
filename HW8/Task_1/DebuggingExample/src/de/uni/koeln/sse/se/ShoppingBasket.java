@@ -22,8 +22,9 @@ public class ShoppingBasket {
 	}
 	
 public Integer getBill() {
-		
-		return getTotalPrice();
+	int a = getTotalPrice();
+	ShoppingBasket.totalPrice=0;
+	return a;
 		
 		
 	}
